@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="315dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="92dp"
+        android:checked="false"
+        android:text=" Only Restaurant Open Now"
+        android:textColorLink="@color/darkBlue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="315dp"
+        android:layout_height="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        tools:layout_editor_absoluteX="50dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="315dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="28dp"
+        android:text=" Distance From Me"
+        android:textColor="#110101"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/switch1"
+        tools:layout_editor_absoluteX="50dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="47dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="250dp"
+        android:layout_marginTop="28dp"
+        android:text="- -"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="315dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="28dp"
+        android:text="Rating"
+        android:textColor="#110101"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        tools:layout_editor_absoluteX="48dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup2"
+        android:layout_width="315dp"
+        android:layout_height="20dp"
+        app:chipSpacing="3dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        tools:layout_editor_absoluteX="48dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:singleSelection="true"
+        style="@style/Widget.MaterialComponents.Chip.Choice">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:text="All"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="5*"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip3"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="4*"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip4"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="3*"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip5"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:text="2*"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip6"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="1*"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="315dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="28dp"
+        android:text="Price Range"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="#110101"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroup2"
+        tools:layout_editor_absoluteX="48dp" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup4"
+        android:layout_width="315dp"
+        android:layout_height="20dp"
+        app:chipSpacing="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:singleSelection="true"
+        tools:layout_editor_absoluteX="48dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        style="@style/Widget.MaterialComponents.Chip.Choice">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip7"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="$"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip8"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="$$"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip9"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
+            android:text="$$$"
+            style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <ScrollView
+        android:layout_width="320dp"
+        android:layout_height="281dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginRight="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroup4">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="88dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="24dp"
+                android:text="Category"
+                android:textColor="#110101"
+                android:textSize="20sp" />
+
+            <CheckBox
+                android:id="@+id/checkBox2"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="@android:string/selectAll" />
+
+            <CheckBox
+                android:id="@+id/checkBox4"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Malaysian Food" />
+
+            <CheckBox
+                android:id="@+id/checkBox7"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Western" />
+
+            <CheckBox
+                android:id="@+id/checkBox3"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Fast Food" />
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Indian" />
+
+            <CheckBox
+                android:id="@+id/checkBox6"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Chinese" />
+
+            <CheckBox
+                android:id="@+id/checkBox5"
+                android:layout_width="315dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:button="@drawable/ic_check_box_black_24dp"
+                android:text="Halal" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
