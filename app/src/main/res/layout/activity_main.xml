@@ -199,5 +199,27 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <TextView
+        android:id="@+id/latTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latitude: "
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lonTextView"
+        tools:layout_editor_absoluteX="285dp" />
+
+    <TextView
+        android:id="@+id/lonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitude: "
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listCat"
+        tools:layout_editor_absoluteX="68dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
