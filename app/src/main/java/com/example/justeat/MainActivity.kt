@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.checkbox.*
 
@@ -42,13 +43,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
     //map
 
-    lateinit var locationManager: LocationManager
-    private var hasGps = false
-    private var hasNetwork = false
-    private var locationGps: Location? = null
-    private var locationNetwork: Location? = null
 
-    private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,13 +83,12 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             }
         }
         //chip group
+
         chipGroup4.setOnCheckedChangeListener { group, checkId: Int ->
 
             val chip: Chip? = findViewById(checkId)
             chip?.let {
-
-                //chip?.setChipBackgroundColorResource(R.color.lightBlue)
-
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
             }
         }
 
