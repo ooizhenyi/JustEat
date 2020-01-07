@@ -1,8 +1,13 @@
 package com.example.justeat
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,12 +17,18 @@ import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.checkbox.*
+
+private const val PERMISSION_REQUEST = 10
 
 class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     //seekbar
@@ -28,9 +39,24 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     private val list: RecyclerView? = null
     private var recyclerAdapter: adapter? = null
 
+
+    //map
+
+    lateinit var locationManager: LocationManager
+    private var hasGps = false
+    private var hasNetwork = false
+    private var locationGps: Location? = null
+    private var locationNetwork: Location? = null
+
+    private var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        //user location
 
         //switch button
         val sw1 = findViewById<Switch>(R.id.switch1)
@@ -56,6 +82,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             val chip: Chip? = findViewById(checkedId)
 
             chip?.let {
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
                 // Show the checked chip text on toast message
                 toast("${it.text} checked")
             }
@@ -66,7 +93,8 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             val chip: Chip? = findViewById(checkId)
             chip?.let {
 
-                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                //chip?.setChipBackgroundColorResource(R.color.lightBlue)
+
             }
         }
 
@@ -97,7 +125,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
         init {
             drawableline =
-                ContextCompat.getDrawable(context,R.drawable.ic_check_box_black_24dp)
+                ContextCompat.getDrawable(context,R.drawable.checkbox)
         }
 
         override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
@@ -155,5 +183,10 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
     fun Context.toast(message:String)=
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
+
+
+
+
+
 }
 
