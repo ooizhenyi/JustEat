@@ -177,25 +177,43 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
         //get filter restaurant
 
-        mService.getDetailPlace(confirmation(Common.currentResult!!.places_id!!.plus(Common.currentResult!!.price_level!!).plus(Common.currentResult!!.rating!!).plus(progressView)))
-            .enqueue(object : retrofit2.Callback<PlaceDetail>{
-                override fun onResponse(call: Call<PlaceDetail>, response: Response<PlaceDetail>) {
-                    mPlace = response!!.body()
-                    place_address.text = mPlace!!.results!!.formatted_address
-                    place_name.text = mPlace!!.results!!.name
 
-                }
-
-                override fun onFailure(call: Call<PlaceDetail>, t: Throwable?) {
-                    Toast.makeText(baseContext,""+t!!.message,Toast.LENGTH_SHORT).show()
-
-                }
-
-            })
 
 
 
     }
+
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.confirm -> {
+            // User chose the "Settings" item, show the app settings UI...
+
+            mService.getDetailPlace(confirmation(Common.currentResult!!.places_id!!.plus(Common.currentResult!!.price_level!!).plus(Common.currentResult!!.rating!!).plus(progressView)))
+                .enqueue(object : retrofit2.Callback<PlaceDetail>{
+                    override fun onResponse(call: Call<PlaceDetail>, response: Response<PlaceDetail>) {
+                        mPlace = response!!.body()
+                        place_address.text = mPlace!!.results!!.formatted_address
+                        place_name.text = mPlace!!.results!!.name
+
+                    }
+
+                    override fun onFailure(call: Call<PlaceDetail>, t: Throwable?) {
+                        Toast.makeText(baseContext,""+t!!.message,Toast.LENGTH_SHORT).show()
+
+                    }
+
+                })
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+
 
     private fun confirmation(plus: String): String {
         val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&result&rating&minprice&maxprice&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
@@ -355,20 +373,6 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
 
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.confirm -> {
-            // User chose the "Settings" item, show the app settings UI...
-            true
-        }
-
-        else -> {
-            // If we got here, the user's action was not recognized.
-            // Invoke the superclass to handle it.
-            super.onOptionsItemSelected(item)
-        }
-    }
-
- 
 
 
 }
