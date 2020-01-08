@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">JustEat</string>
+
+    <string name="place_name">Place Name</string>
+    <string name="distance">distance</string>
+    <string name="place_address">Place Address</string>
+    <string name="open_now">Open Now</string>
+    <string name="show_on_map">Get Location</string>
+    <string name="call_now">Call Now</string>
+    <string name="view_details">View More Details on Google</string>
+    <string name="review">review</string>
+
+
+    <string name="title_activity_maps">Map</string>
+
 </resources>

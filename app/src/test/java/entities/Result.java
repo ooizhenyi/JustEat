@@ -22,6 +22,8 @@ public class Result implements Serializable {
     @SerializedName("opening_hours")
     private OpeningHours openingHours;
 
+    @SerializedName("photos")
+    private List<Photo> photos = new ArrayList<Photo>();
 
     @SerializedName("place_id")
     private String placeId;
@@ -113,11 +115,19 @@ public class Result implements Serializable {
     public void setOpeningHours(OpeningHours openingHours) {
         this.openingHours = openingHours;
     }
+    /**
+     * @return The photos
+     */
+    public List<Photo> getPhotos() {
+        return photos;
+    }
 
-
-
-
-
+    /**
+     * @param photos The photos
+     */
+    public void setPhotos(List<Photo> photos) {
+        this.photos = photos;
+    }
     /**
      * @return The placeId
      */

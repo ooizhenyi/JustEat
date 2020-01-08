@@ -7,4 +7,13 @@
     <color name="lightBlue">#4c98cf</color>
     <color name="darkBlue">#2d6faf</color>
     <color name="white">#ffffff</color>
+
+    <color name="greyBg">#EBE8E8</color>
+
+    <!-- For Restaurant Buttons -->
+    <color name="blueBtn">#4C98CF</color>
+    <color name="greenBtn">#5CB85C</color>
+    <color name="yellowBtn">#5CB85C</color>
+    <color name="orangeBtn">#FEB607</color>
+    <color name="greyBack">#fafafa</color>
 </resources>

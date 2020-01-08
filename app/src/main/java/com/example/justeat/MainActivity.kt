@@ -9,7 +9,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
@@ -17,21 +17,20 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
-import android.widget.Switch
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.justeat.Common.Common
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.checkbox.*
+import com.example.myapplication.Model.PlaceDetail
+import com.example.myapplication.Remote.iGoogleAPIService
+import kotlinx.android.synthetic.main.restaurant.*
+import java.lang.StringBuilder
+import kotlin.math.absoluteValue
 
 private const val PERMISSION_REQUEST = 10
 
@@ -49,9 +48,19 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
+    //map
+    internal lateinit var mService: iGoogleAPIService
+    var mPlace: PlaceDetail?=null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mService = Common.googleAPIService
+        place_open_hour.text=""
+        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mPlace!!.results!!.url))
+        startActivity(mapIntent)
 
         //user location
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -59,14 +68,24 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
         getLastLocation()
 
         //switch button
-        val sw1 = findViewById<Switch>(R.id.switch1)
+        val sw = findViewById<Switch>(R.id.switch1)
+        sw?.setOnCheckedChangeListener { _, isChecked ->
+            val msg = if (isChecked) "ON" else "OFF"
+            if(isChecked){
+                Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+                if(Common.currentResult!!.opening_hours != null){
+                    openNow(Common.currentResult!!.places_id!!)
 
-        sw1?.setOnCheckedChangeListener { _, isChecked ->
-            val message = if (isChecked) "Switch:ON" else "Switch:OFF"
-            Toast.makeText(this@MainActivity, message,
-                Toast.LENGTH_SHORT).show()
+                }else{
 
+                }
+
+
+            }else{
+                Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+            }
         }
+
 
         // Seekbar
         progressView = this.textView2
@@ -113,7 +132,12 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
 
 
+    }
 
+    private fun openNow(placesId:String): String {
+        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        url.append("?place_id=$placesId")
+        return url.toString()
     }
 
     //user location
@@ -228,7 +252,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
         }
     }
 
-    private inner class adapter(internal var context: Context, internal var mData: List<String>) :
+    private inner class adapter(internal var context: Context, internal var mData: List<String> ) :
         RecyclerView.Adapter<adapter.myViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): adapter.myViewHolder {
@@ -237,8 +261,17 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             return myViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: adapter.myViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: myViewHolder, position: Int) {
             holder.category.text = mData[position]
+            // holder.checkBox.setTag(R.integer.btnplusview, convertView);
+            holder.checkBox.tag = position
+            holder.checkBox.setOnClickListener {
+
+                Toast.makeText(context, mData[position] + " clicked!", Toast.LENGTH_SHORT).show()
+
+            }
+
+
         }
 
         override fun getItemCount(): Int {
@@ -247,9 +280,11 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
         inner class myViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             internal var category: TextView
+             var checkBox : CheckBox
 
             init {
                 category = itemView.findViewById(R.id.cat)
+                checkBox = itemView.findViewById(R.id.cb)
             }
         }
     }
@@ -257,7 +292,20 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     //seekBar
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
         progressView!!.text = progress.toString()
+        range(progress.toString())
     }
+
+    private fun range(progress: String) :String{
+
+        var progress2 = Integer.parseInt(progress)
+        var result =  progress2 *1000
+        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/result&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        url.append("?range=$result")
+        return url.toString()
+
+    }
+
+
     override fun onStopTrackingTouch(seekBar: SeekBar) {
 
     }
@@ -272,6 +320,6 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
 
 
+    }
 
-}
 
