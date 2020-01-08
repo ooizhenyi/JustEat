@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -29,6 +30,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import com.example.myapplication.Model.PlaceDetail
 import com.example.myapplication.Remote.iGoogleAPIService
 import kotlinx.android.synthetic.main.restaurant.*
+import retrofit2.Call
+import retrofit2.Response
 import java.lang.StringBuilder
 import kotlin.math.absoluteValue
 
@@ -40,8 +43,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     var seekBarView: SeekBar? = null
 
     //recycleView for checkbox
-    private val list: RecyclerView? = null
-    private var recyclerAdapter: adapter? = null
+
 
 
     //user location
@@ -97,42 +99,137 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             // Get the checked chip instance from chip group
             val chip: Chip? = findViewById(checkedId)
 
-            chip?.let {
+            if(checkedId==R.id.chip){
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                // Show the checked chip text on toast message
-                toast("${it.text} checked")
+                if(Common.currentResult!!.rating != null )
+                    ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else if(checkedId == R.id.chip2){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if(Common.currentResult!!.rating != null && Common.currentResult!!.rating >= 5.0)
+                    ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else if(checkedId == R.id.chip3){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if(Common.currentResult!!.rating != null)
+                    if(Common.currentResult!!.rating >= 4.0 && Common.currentResult!!.rating<5.0)
+                    ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else if(checkedId == R.id.chip4){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if(Common.currentResult!!.rating != null)
+                    if(Common.currentResult!!.rating >= 3.0&& Common.currentResult!!.rating<4.0)
+                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else if(checkedId == R.id.chip5){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if(Common.currentResult!!.rating != null)
+                    if(Common.currentResult!!.rating >= 2.0&& Common.currentResult!!.rating<3.0)
+                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else if(checkedId == R.id.chip6){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if(Common.currentResult!!.rating != null)
+                    if(Common.currentResult!!.rating >= 1.0&& Common.currentResult!!.rating<2.0)
+                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
+                rating(ratingBar.rating)
+            }else{
+                toast("is not checked")
             }
+
+
+           // chip?.let {
+              //  chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                // Show the checked chip text on toast message
+               // toast("${it.text} checked")
+           // }
         }
         //chip group
 
         chipGroup4.setOnCheckedChangeListener { group, checkId: Int ->
 
             val chip: Chip? = findViewById(checkId)
-            chip?.let {
+            if(checkId == R.id.chip7) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if (Common.currentResult!!.price_level != null)
+                    if (Common.currentResult!!.price_level < 100)
+                        price.text = "Price: " + Common.currentResult!!.price_level
+                priceRange(Common.currentResult!!.price_level)
+
+            }else if(checkId == R.id.chip8){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if (Common.currentResult!!.price_level != null)
+                    if (Common.currentResult!!.price_level < 1000 && Common.currentResult!!.price_level>=100)
+                        price.text = "Price: " + Common.currentResult!!.price_level
+                priceRange(Common.currentResult!!.price_level)
+            }else if(checkId == R.id.chip9){
+                chip?.setChipBackgroundColorResource(R.color.lightBlue)
+                if (Common.currentResult!!.price_level != null)
+                    if (Common.currentResult!!.price_level < 10000 && Common.currentResult!!.price_level>=1000)
+                        price.text = "Price: " + Common.currentResult!!.price_level
+                priceRange(Common.currentResult!!.price_level)
             }
+
+            //chip?.let {
+              //  chip?.setChipBackgroundColorResource(R.color.lightBlue)
+           // }
         }
 
-        //checkBox
-        val list = findViewById<RecyclerView>(R.id.listCat)
-        val category = arrayListOf<String>()
-        category.add("All")
-        category.add("Malaysian Food")
-        category.add("Fast Food")
-        category.add("Indian")
-        category.add("Halal")
-        category.add("Western")
-        category.add("Chinese")
+        //get filter restaurant
 
-        val layoutManager = LinearLayoutManager(this)
-        list.layoutManager = layoutManager
-        recyclerAdapter = adapter(this@MainActivity, category)
-        list.addItemDecoration(CustomDividerItemDecoration(this@MainActivity))
-        list.adapter = recyclerAdapter
+        mService.getDetailPlace(confirmation(Common.currentResult!!.places_id!!.plus(Common.currentResult!!.price_level!!).plus(Common.currentResult!!.rating!!).plus(progressView)))
+            .enqueue(object : retrofit2.Callback<PlaceDetail>{
+                override fun onResponse(call: Call<PlaceDetail>, response: Response<PlaceDetail>) {
+                    mPlace = response!!.body()
+                    place_address.text = mPlace!!.results!!.formatted_address
+                    place_name.text = mPlace!!.results!!.name
+
+                }
+
+                override fun onFailure(call: Call<PlaceDetail>, t: Throwable?) {
+                    Toast.makeText(baseContext,""+t!!.message,Toast.LENGTH_SHORT).show()
+
+                }
+
+            })
 
 
 
     }
+
+    private fun confirmation(plus: String): String {
+        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&result&rating&minprice&maxprice&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        url.append("?restaurant=$plus")
+        return url.toString()
+    }
+
+    private fun priceRange(priceLevel: Int):String {
+        if(priceLevel<=100){
+        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=0&maxprice=1&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        url.append("?price=$priceLevel")
+        return url.toString()
+        }else if(priceLevel<=1000){
+            val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=1&maxprice=2&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+            url.append("?price=$priceLevel")
+            return url.toString()
+        }else if(priceLevel<=10000) {
+            val url =
+                StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=2&maxprice=3&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+            url.append("?price=$priceLevel")
+            return url.toString()
+        }else{
+            val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=0&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+            url.append("?price=$priceLevel")
+            return url.toString()
+        }
+    }
+
+    private fun rating(rating: Float):String {
+        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/rating&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        url.append("?rating=$rating")
+        return url.toString()
+    }
+
 
     private fun openNow(placesId:String): String {
         val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
@@ -228,66 +325,6 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     }
 
     //checkBox Adapter
-    private inner class CustomDividerItemDecoration(context: Context) :
-        RecyclerView.ItemDecoration() {
-        private val drawableline: Drawable?
-
-        init {
-            drawableline =
-                ContextCompat.getDrawable(context,R.drawable.checkbox)
-        }
-
-        override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-            val left = parent.paddingLeft
-            val right = parent.width - parent.paddingRight
-            val childCount = parent.childCount
-            for (i in 0 until childCount) {
-                val child = parent.getChildAt(i)
-                val params = child.layoutParams as RecyclerView.LayoutParams
-                val top = child.bottom + params.bottomMargin
-                val bottom = top + drawableline!!.intrinsicHeight
-                drawableline.setBounds(left, top, right, bottom)
-                drawableline.draw(c)
-            }
-        }
-    }
-
-    private inner class adapter(internal var context: Context, internal var mData: List<String> ) :
-        RecyclerView.Adapter<adapter.myViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): adapter.myViewHolder {
-            val view =
-                LayoutInflater.from(context).inflate(R.layout.checkbox, parent, false)
-            return myViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: myViewHolder, position: Int) {
-            holder.category.text = mData[position]
-            // holder.checkBox.setTag(R.integer.btnplusview, convertView);
-            holder.checkBox.tag = position
-            holder.checkBox.setOnClickListener {
-
-                Toast.makeText(context, mData[position] + " clicked!", Toast.LENGTH_SHORT).show()
-
-            }
-
-
-        }
-
-        override fun getItemCount(): Int {
-            return mData.size
-        }
-
-        inner class myViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            internal var category: TextView
-             var checkBox : CheckBox
-
-            init {
-                category = itemView.findViewById(R.id.cat)
-                checkBox = itemView.findViewById(R.id.cb)
-            }
-        }
-    }
 
     //seekBar
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -318,8 +355,22 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
 
 
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.confirm -> {
+            // User chose the "Settings" item, show the app settings UI...
+            true
+        }
 
-
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
+
+ 
+
+
+}
 
 
