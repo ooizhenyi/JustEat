@@ -21,9 +21,12 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.multidex.MultiDex
+import androidx.multidex.MultiDexApplication
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.justeat.Common.Common
+import com.example.myapplication.Model.OpeningHours
 import com.google.android.gms.location.*
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.activity_main.*
@@ -35,9 +38,13 @@ import retrofit2.Response
 import java.lang.StringBuilder
 import kotlin.math.absoluteValue
 
+
 private const val PERMISSION_REQUEST = 10
 
 class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
+
+
+
     //seekbar
     var progressView: TextView? = null
     var seekBarView: SeekBar? = null
@@ -56,13 +63,14 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        MultiDex.install(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         mService = Common.googleAPIService
-        place_open_hour.text=""
-        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mPlace!!.results!!.url))
-        startActivity(mapIntent)
+       // place_open_hour.text=""
+       // val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mPlace!!.results!!.url))
+       // startActivity(mapIntent)
 
         //user location
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -76,7 +84,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
             if(isChecked){
                 Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 if(Common.currentResult!!.opening_hours != null){
-                    openNow(Common.currentResult!!.places_id!!)
+                    openNow(Common.currentResult!!.opening_hours!!)
 
                 }else{
 
@@ -183,12 +191,20 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
     }
 
+    private fun openNow(openingHours: OpeningHours):String {
+
+            val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+            url.append("?opening_hours=$openingHours")
+            return url.toString()
+
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.confirm -> {
             // User chose the "Settings" item, show the app settings UI...
 
-            mService.getDetailPlace(confirmation(Common.currentResult!!.places_id!!.plus(Common.currentResult!!.price_level!!).plus(Common.currentResult!!.rating!!).plus(progressView)))
+            mService.getDetailPlace(confirmation(Common.currentResult!!.opening_hours!!.open_now.toString().plus(Common.currentResult!!.rating!!).plus(progressView)))
                 .enqueue(object : retrofit2.Callback<PlaceDetail>{
                     override fun onResponse(call: Call<PlaceDetail>, response: Response<PlaceDetail>) {
                         mPlace = response!!.body()
@@ -249,11 +265,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
     }
 
 
-    private fun openNow(placesId:String): String {
-        val url= StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-        url.append("?place_id=$placesId")
-        return url.toString()
-    }
+
 
     //user location
     @SuppressLint("MissingPermission")
