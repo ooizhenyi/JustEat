@@ -54,6 +54,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object{
         private const val MY_PERMISSION_CODE: Int = 1000
+        private const val API_KEY = "AIzaSyBUJWk3qua7OcXUyJKcc3AvohYGI7d3Vp0"
     }
 
     private lateinit var mServices:iGoogleAPIService
@@ -84,8 +85,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
             fusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.myLooper())
         }
-
+        //nearByPlace("restaurant")
         bottom_navigation_view.setOnNavigationItemSelectedListener{item->
+            println("Testing123 - inside listener")
             when(item.itemId){
                 R.id.action_market -> nearByPlace("market")
                 R.id.action_restaurant -> nearByPlace("restaurant")
@@ -99,6 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //clear all marker in map
         mMap.clear()
         var url = getUrl(latitude,longtitude,typePlace)
+        println("Testing123 - $url, $latitude, $longtitude, $typePlace")
 
         mServices.getNearbyPlace(url)
             .enqueue(object : Callback<MyPlaces> {
@@ -149,7 +152,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         googlePlaceUrl.append("?location=$latitude,$longitude")
         googlePlaceUrl.append("&radius=10000") //10km
         googlePlaceUrl.append("&type=$typePlace")
-        googlePlaceUrl.append("&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        googlePlaceUrl.append("&key=$API_KEY")
 
         Log.d("URL_DEBUG",googlePlaceUrl.toString())
         return googlePlaceUrl.toString()

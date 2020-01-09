@@ -29,7 +29,7 @@
             android:value="@integer/google_play_services_version" />
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0"
+            android:value="AIzaSyBUJWk3qua7OcXUyJKcc3AvohYGI7d3Vp0"
             />
 
 

@@ -14,7 +14,7 @@ class Results {
     var types:Array<String>?=null
     var vicinity:String?=null
     var opening_hours:OpeningHours?=null
-
+    //var distance:String?=null
     var address_components:Array<Address_component>?=null
     var adr_address:String?=null
     var formatted_address:String?=null
@@ -23,6 +23,6 @@ class Results {
     var name:String?=null
     var url:String?=null
     var reviews:Array<Review>?=null
-    var user_ratings_total:Integer?=null
+    var user_ratings_total:Int?=null
 
 }

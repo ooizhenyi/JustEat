@@ -3,6 +3,7 @@ package com.example.justeat.Common
 import com.example.myapplication.Model.Results
 import com.example.myapplication.Remote.RetrofitClient
 import com.example.myapplication.Remote.iGoogleAPIService
+import java.util.ArrayList
 
 
 object Common {
