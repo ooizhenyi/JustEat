@@ -158,9 +158,9 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener {
 
             val chip: Chip? = findViewById(checkId)
             if(checkId == R.id.chip7) {
-                chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.price_level != null)
-                    if (Common.currentResult!!.price_level < 100)
+                //chip?.setChipBackgroundColorResource(R.color.lightBlue)
+
+                    Common.currentResult!!.price_level < 100
                         price.text = "Price: " + Common.currentResult!!.price_level
                 priceRange(Common.currentResult!!.price_level)
 

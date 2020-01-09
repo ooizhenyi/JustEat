@@ -23,6 +23,6 @@ class Results {
     var name:String?=null
     var url:String?=null
     var reviews:Array<Review>?=null
-
+    var user_ratings_total:Integer?=null
 
 }
