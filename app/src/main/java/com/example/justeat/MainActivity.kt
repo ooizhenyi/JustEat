@@ -51,8 +51,17 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     //seekbar
     var progressView: TextView? = null
     var seekBarView: SeekBar? = null
+    var result: Int?=null
 
-    //recycleView for checkbox
+    //chip grp for price range
+    var minpriceLevel : Int ?= null
+    var maxpriceLevel : Int ?= null
+
+    //chip grp for rating
+    var rating : Double ?= null
+
+    // switch button
+    var openNow : Boolean = false
 
 
     //user location
@@ -60,8 +69,9 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     //map
-    internal lateinit var mService: iGoogleAPIService
-    var mPlace: PlaceDetail? = null
+    //internal lateinit var mService: iGoogleAPIService
+    //var mPlace: PlaceDetail? = null
+    var nearby = ArrayList<Restaurant>()
 
 
     //MapsActivity
@@ -74,7 +84,6 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     private lateinit var mLastLocation: android.location.Location
     private var mMarker: Marker? = null
 
-    var restaurantLocation = ArrayList<String>()
 
 
     //location
@@ -88,8 +97,11 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     }
 
     private lateinit var mServices: iGoogleAPIService
-    var mDistance: DistanceM? = null
     var currentPlace: MyPlaces? = null
+    var mDistance: DistanceM? = null
+
+    var disKM:String?=null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +110,6 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mService = Common.googleAPIService
         // place_open_hour.text=""
         // val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mPlace!!.results!!.url))
         // startActivity(mapIntent)
@@ -119,14 +130,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
             if (isChecked) {
                 Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 println("Opening Hours " + nearby!!)
-                for (i in 0 until nearby.size)
-                    if (Common.currentResult!!.opening_hours != null)
-                        if (Common.currentResult!!.opening_hours!!.open_now.equals(true)) {
-                            openNow(Common.currentResult!!.opening_hours!!)
-                            println("Opening Hours" + Common.currentResult!!.opening_hours)
-                        } else {
-
-                        }
+                openNow = true
 
             } else {
                 Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
@@ -146,38 +150,22 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 
             if (checkedId == R.id.chip) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null)
-                    ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 5.0
             } else if (checkedId == R.id.chip2) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null && Common.currentResult!!.rating >= 5.0)
-                    ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 5.0
             } else if (checkedId == R.id.chip3) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null)
-                    if (Common.currentResult!!.rating >= 4.0 && Common.currentResult!!.rating < 5.0)
-                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 4.0
             } else if (checkedId == R.id.chip4) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null)
-                    if (Common.currentResult!!.rating >= 3.0 && Common.currentResult!!.rating < 4.0)
-                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 3.0
             } else if (checkedId == R.id.chip5) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null)
-                    if (Common.currentResult!!.rating >= 2.0 && Common.currentResult!!.rating < 3.0)
-                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 2.0
             } else if (checkedId == R.id.chip6) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.rating != null)
-                    if (Common.currentResult!!.rating >= 1.0 && Common.currentResult!!.rating < 2.0)
-                        ratingBar.rating = Common.currentResult!!.rating.toFloat()
-                rating(Common.currentResult!!.rating)
+                rating = 1.0
             } else {
                 toast("is not checked")
             }
@@ -196,23 +184,16 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
             val chip: Chip? = findViewById(checkId)
             if (checkId == R.id.chip7) {
                 //chip?.setChipBackgroundColorResource(R.color.lightBlue)
-
-                Common.currentResult!!.price_level < 100
-                price.text = "Price: " + Common.currentResult!!.price_level
-                priceRange(Common.currentResult!!.price_level)
-
+                minpriceLevel = 0
+                maxpriceLevel = 1
             } else if (checkId == R.id.chip8) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.price_level != null)
-                    if (Common.currentResult!!.price_level < 1000 && Common.currentResult!!.price_level >= 100)
-                        price.text = "Price: " + Common.currentResult!!.price_level
-                priceRange(Common.currentResult!!.price_level)
+                minpriceLevel = 1
+                maxpriceLevel = 2
             } else if (checkId == R.id.chip9) {
                 chip?.setChipBackgroundColorResource(R.color.lightBlue)
-                if (Common.currentResult!!.price_level != null)
-                    if (Common.currentResult!!.price_level < 10000 && Common.currentResult!!.price_level >= 1000)
-                        price.text = "Price: " + Common.currentResult!!.price_level
-                priceRange(Common.currentResult!!.price_level)
+                minpriceLevel = 2
+                maxpriceLevel = 3
             }
 
             //chip?.let {
@@ -222,47 +203,42 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 
         //get filter restaurant
 
+        var confirmButon : Button = findViewById(R.id.button)
+        confirmButon.setOnClickListener {
+            confirmation()
+        }
+
 
     }
-
-    private fun openNow(openingHours: OpeningHours): String {
-
-        val url =
-            StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-        url.append("?opening_hours=$openingHours")
-        return url.toString()
-
-    }
-
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.confirm -> {
             // User chose the "Settings" item, show the app settings UI...
 
-            mService.getDetailPlace(
-                confirmation(
-                    Common.currentResult!!.opening_hours!!.open_now.toString().plus(
-                        Common.currentResult!!.rating!!
-                    ).plus(progressView)
-                )
-            )
-                .enqueue(object : retrofit2.Callback<PlaceDetail> {
-                    override fun onResponse(
-                        call: Call<PlaceDetail>,
-                        response: Response<PlaceDetail>
-                    ) {
-                        mPlace = response!!.body()
-                        place_address.text = mPlace!!.results!!.formatted_address
-                        place_name.text = mPlace!!.results!!.name
-
-                    }
-
-                    override fun onFailure(call: Call<PlaceDetail>, t: Throwable?) {
-                        Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
-
-                    }
-
-                })
+//            mService.getDetailPlace(
+//                confirmation(
+//                    Common.currentResult!!.opening_hours!!.open_now.toString().plus(
+//                        Common.currentResult!!.rating!!
+//                    ).plus(progressView)
+//                )
+//            )
+//                .enqueue(object : retrofit2.Callback<PlaceDetail> {
+//                    override fun onResponse(
+//                        call: Call<PlaceDetail>,
+//                        response: Response<PlaceDetail>
+//                    ) {
+//                        mPlace = response!!.body()
+//                        place_address.text = mPlace!!.results!!.formatted_address
+//                        place_name.text = mPlace!!.results!!.name
+//
+//                    }
+//
+//                    override fun onFailure(call: Call<PlaceDetail>, t: Throwable?) {
+//                        Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
+//
+//                    }
+//
+//                })
 
 //            mService.getDistanceMatrix(
 //                getPlaceDistanceMatrixUrl(
@@ -301,70 +277,42 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
         return url.toString()
     }
 
-    private fun getPlaceDistance(
-        originsLat: Double,
-        originsLng: Double,
-        destPlaceId: String
-    ): String {
-        var distanceInKm = ""
+//    private fun getPlaceDistance(originsLat: Double, originsLng: Double, destPlaceId: String): String {
+//
+//
+//        mServices.getDistanceMatrix(
+//            getPlaceDistanceMatrixUrl(
+//                originsLat, originsLng,
+//                destPlaceId
+//            )
+//        ).enqueue(object : Callback<DistanceM> {
+//            override fun onResponse(call: Call<DistanceM>, response:Response<DistanceM>) {
+//                mDistance = response!!.body()
+//                disKM = mDistance!!.rows!![0].elements!![0].distance!!.text!!.toString()
+//                //txtDistance.text = disKM
+//                Log.d("RESPONSE", "$disKM")
+//            }
+//
+//            override fun onFailure(call: Call<DistanceM>, t: Throwable?) {
+//                Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
 
-        mService.getDistanceMatrix(
-            getPlaceDistanceMatrixUrl(
-                originsLat, originsLng,
-                destPlaceId
-            )
-        ).enqueue(object : Callback<DistanceM> {
-            override fun onResponse(call: Call<DistanceM>, response: Response<DistanceM>) {
-                mDistance = response!!.body()
-                distanceInKm = mDistance!!.rows!![0].elements!![0].distance!!.text!!
-                Log.d("CURRENT", mDistance!!.rows!![0].elements!![0].distance!!.text!!)
-            }
+    private fun confirmation():String {
 
-            override fun onFailure(call: Call<DistanceM>, t: Throwable?) {
-                Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-        return distanceInKm
-    }
-
-    private fun confirmation(plus: String): String {
-        val url =
-            StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/opennow&result&rating&minprice&maxprice&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-        url.append("?restaurant=$plus")
-        return url.toString()
-    }
-
-    private fun priceRange(priceLevel: Int): String {
-        if (priceLevel <= 100) {
-            val url =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=0&maxprice=1&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-            url.append("?price=$priceLevel")
-            return url.toString()
-        } else if (priceLevel <= 1000) {
-            val url =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=1&maxprice=2&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-            url.append("?price=$priceLevel")
-            return url.toString()
-        } else if (priceLevel <= 10000) {
-            val url =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=2&maxprice=3&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-            url.append("?price=$priceLevel")
-            return url.toString()
-        } else {
-            val url =
-                StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/minprice=0&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-            url.append("?price=$priceLevel")
-            return url.toString()
-        }
-    }
-
-    private fun rating(rating: Double): String {
-        val url =
-            StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/rating&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
+        val url = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
+        url.append("?location=${mLastLocation.latitude},${mLastLocation.longitude}")
+        url.append("?radius=$result")
+        url.append("?type=restaurant")
+        url.append("?opennow=$openNow")
         url.append("?rating=$rating")
+        url.append("?minprice=$minpriceLevel")
+        url.append("?maxprice=$maxpriceLevel")
+        url.append("&key=$API_KEY")
         return url.toString()
-    }
 
+    }
 
     //user location
     @SuppressLint("MissingPermission")
@@ -469,15 +417,10 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
         range(progress.toString())
     }
 
-    private fun range(progress: String): String {
+    private fun range(progress: String) {
 
         var progress2 = Integer.parseInt(progress)
-        var result = progress2 * 1000
-        val url =
-            StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/result&key=AIzaSyABCcNkZ4q2DH34jM_IIzsQ4m9-ury_Ph0")
-        url.append("?range=$result")
-        return url.toString()
-
+         result = progress2 * 1000
     }
 
 
@@ -526,7 +469,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
         //nearByPlace("restaurant")
     }
 
-    var nearby = ArrayList<Restaurant>()
+
 
     private fun nearByPlace(typePlace: String) {
 
@@ -557,11 +500,24 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                             val placeId = Common.currentResult!!.reference!!
                             val name = Common.currentResult!!.name!!
                             val address = Common.currentResult!!.vicinity!!
-                            val distance = getPlaceDistance(latitude1, longtitude1, placeId)
-                            val isOpenNow = Common.currentResult!!.opening_hours!!.open_now!!
+
+
+                            val isOpenNow:Boolean
+                            if(Common.currentResult!!.opening_hours != null){
+                                isOpenNow = Common.currentResult!!.opening_hours!!.open_now
+                            }else{
+                                isOpenNow = false
+                            }
+                            //val isOpenNow = Common.currentResult!!.opening_hours!!.open_now!!
                             val priceLevel = Common.currentResult!!.price_level!!
                             val rating = Common.currentResult!!.rating!!
-                            val noOfReview = Common.currentResult!!.user_ratings_total!!
+
+                            val noOfReview:Int
+                            if(Common.currentResult!!.user_ratings_total != null){
+                                noOfReview = Common.currentResult!!.user_ratings_total!!
+                            }else{
+                                noOfReview = 0
+                            }
 
                             println("current result1: $placeId, $name, $address, $distance, $isOpenNow, $priceLevel, $rating, $noOfReview")
 
@@ -570,14 +526,16 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                                     placeId,
                                     name,
                                     address,
-                                    distance,
                                     isOpenNow,
                                     priceLevel,
                                     rating,
                                     noOfReview
                                 )
                             )
-                            println("current result:" + nearby)
+
+
+
+                            println("array : $nearby")
 
 
                             // markerOptions.position(latLng)
@@ -600,8 +558,9 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                         }
 
 
+
                     }
-                    Log.d("TESTING", " $currentPlace")
+                    Log.d("TESTING", " $nearby")
                 }
 
                 override fun onFailure(call: Call<MyPlaces>?, t: Throwable?) {
@@ -609,6 +568,9 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                     Toast.makeText(baseContext, "" + t!!.message, Toast.LENGTH_SHORT).show()
                 }
             })
+
+
+
     }
 
     private fun getUrl(latitude: Double, longitude: Double, typePlace: String): String {
@@ -640,6 +602,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                 longtitude1 = mLastLocation.longitude
                 Log.d("TESTING", "buildLocationCallBack $latitude1, $longtitude1")
                 nearByPlace("restaurant")
+
 
                 //val latLng = LatLng(latitude1, longtitude1)
                 // val markerOptions = MarkerOptions()
@@ -770,7 +733,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
             if (marker.snippet != null) {
 
                 Common.currentResult = currentPlace!!.results!![Integer.parseInt(marker.snippet)]
-                println("current result:" + Common.currentResult)
+                println("current result456:" + Common.currentResult)
 
                 //Toast.makeText(baseContext,"" + marker.snippet,Toast.LENGTH_LONG).show()
                 //Toast.makeText(baseContext,"" + Common.currentResult!!.photos!![0].photo_reference,Toast.LENGTH_LONG).show()
@@ -789,6 +752,8 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 
 
     }
+
+
 
 
     fun Context.toast(message: String) =
