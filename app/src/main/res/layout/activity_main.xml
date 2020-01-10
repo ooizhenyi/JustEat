@@ -218,6 +218,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chipGroup4"
-        android:background="@color/lightBlue"/>
+        android:background="@color/lightBlue"
+        android:textColor="@color/lightBlue"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

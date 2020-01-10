@@ -24,5 +24,6 @@ class Results {
     var url:String?=null
     var reviews:Array<Review>?=null
     var user_ratings_total:Int?=null
+    var filter:MyPlaces?=null
 
 }

@@ -23,11 +23,9 @@ import androidx.multidex.MultiDex
 import com.example.justeat.Common.Common
 import com.example.justeathj.model.Restaurant
 import com.example.myapplication.Model.MyPlaces
-import com.example.myapplication.Model.OpeningHours
 import com.google.android.gms.location.*
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.activity_main.*
-import com.example.myapplication.Model.PlaceDetail
 import com.example.myapplication.Remote.iGoogleAPIService
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.GoogleMap
@@ -51,7 +49,8 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     //seekbar
     var progressView: TextView? = null
     var seekBarView: SeekBar? = null
-    var result: Int?=null
+    var result:Int ?=null
+
 
     //chip grp for price range
     var minpriceLevel : Int ?= null
@@ -72,6 +71,12 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
     //internal lateinit var mService: iGoogleAPIService
     //var mPlace: PlaceDetail? = null
     var nearby = ArrayList<Restaurant>()
+    var filter = ArrayList<Restaurant>()
+
+    var nextPageToken : String = ""
+    var  requestCount:Int = 0;
+     var  API_KEY2:String = "AIzaSyBUJWk3qua7OcXUyJKcc3AvohYGI7d3Vp0";
+    var   REQUEST_LIMIT:Int = 3;
 
 
     //MapsActivity
@@ -203,9 +208,10 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 
         //get filter restaurant
 
-        var confirmButon : Button = findViewById(R.id.button)
+        val confirmButon : Button = findViewById(R.id.button)
         confirmButon.setOnClickListener {
-            confirmation()
+            println("Run Button")
+            nearByPlace()
         }
 
 
@@ -299,18 +305,26 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 //        })
 //    }
 
+    val url2 : StringBuilder ?=null
     private fun confirmation():String {
 
         val url = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
-        url.append("?location=${mLastLocation.latitude},${mLastLocation.longitude}")
-        url.append("?radius=$result")
-        url.append("?type=restaurant")
-        url.append("?opennow=$openNow")
-        url.append("?rating=$rating")
-        url.append("?minprice=$minpriceLevel")
-        url.append("?maxprice=$maxpriceLevel")
+
+        url.append("?location=$latitude1,$longtitude1")
+        url.append("&radius=$result")
+        url.append("&type=restaurant")
+        url.append("&opennow=$openNow")
+        url.append("&rating=$rating")
+        url.append("&minprice=$minpriceLevel")
+        url.append("&maxprice=$maxpriceLevel")
         url.append("&key=$API_KEY")
+
+        println("button url: " + url.toString())
+
+
+
         return url.toString()
+
 
     }
 
@@ -409,76 +423,14 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
         }
     }
 
-    //checkBox Adapter
-
-    //seekBar
-    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        progressView!!.text = progress.toString()
-        range(progress.toString())
-    }
-
-    private fun range(progress: String) {
-
-        var progress2 = Integer.parseInt(progress)
-         result = progress2 * 1000
-    }
-
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) {
-
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {
-
-    }
-
-
-    // MapsActivity
-    private fun initMaps() {
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        //val mapFragment = supportFragmentManager
-        //    .findFragmentById(R.id.map) as SupportMapFragment
-        //mapFragment.getMapAsync(this)
-
-        mServices = Common.googleAPIService
-
-        //have
-        //request runtime permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkLocationPermission()) {
-                buildLocationRequest()
-                buildLocationCallBack()
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-                fusedLocationProviderClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.myLooper()
-                )
-            }
-        } else {
-            buildLocationRequest()
-            buildLocationCallBack()
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.myLooper()
-            )
-        }
-
-        //nearByPlace("restaurant")
-    }
-
-
-
-    private fun nearByPlace(typePlace: String) {
+    private fun nearByPlace() {
 
         //clear all marker in map
         // mMap.clear()
-        var url = getUrl(latitude1, longtitude1, typePlace)
-        println("Testing123 - $url, $latitude1, $longtitude1, $typePlace")
+        var url:String = getUrl()
+        println("Testing123 - " + url)
 
-        mServices.getNearbyPlace(url)
+        mServices.getNearbyPlace(getUrl())
             .enqueue(object : Callback<MyPlaces> {
                 override fun onResponse(call: Call<MyPlaces>?, response: Response<MyPlaces>?) {
                     currentPlace = response!!.body()!!
@@ -573,14 +525,81 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
 
     }
 
-    private fun getUrl(latitude: Double, longitude: Double, typePlace: String): String {
+    //seekBar
+    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+        progressView!!.text = progress.toString()
+        range(progress.toString())
+    }
+
+    private fun range(progress: String) {
+
+        var progress2 = Integer.parseInt(progress)
+         result = progress2 * 1000
+    }
+
+
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+    }
+
+
+    // MapsActivity
+    private fun initMaps() {
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        //val mapFragment = supportFragmentManager
+        //    .findFragmentById(R.id.map) as SupportMapFragment
+        //mapFragment.getMapAsync(this)
+
+        mServices = Common.googleAPIService
+
+        //have
+        //request runtime permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkLocationPermission()) {
+                buildLocationRequest()
+                buildLocationCallBack()
+                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.myLooper()
+                )
+            }
+        } else {
+            buildLocationRequest()
+            buildLocationCallBack()
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.myLooper()
+            )
+        }
+
+        //nearByPlace("restaurant")
+    }
+
+
+
+
+
+    private fun getUrl(): String {
 
         val googlePlaceUrl =
             StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
-        googlePlaceUrl.append("?location=$latitude,$longitude")
-        googlePlaceUrl.append("&radius=10000") //10km
-        googlePlaceUrl.append("&type=$typePlace")
+        googlePlaceUrl.append("?location=$latitude1,$longtitude1")
+        googlePlaceUrl.append("&radius=$result") //10km
+        googlePlaceUrl.append("&type=restaurant")
+        googlePlaceUrl.append("&opennow=$openNow")
+        googlePlaceUrl.append("&rating=$rating")
+        googlePlaceUrl.append("&minprice=$minpriceLevel")
+        googlePlaceUrl.append("&maxprice=$maxpriceLevel")
         googlePlaceUrl.append("&key=${API_KEY}")
+
 
         Log.d("URL_DEBUG", googlePlaceUrl.toString())
         return googlePlaceUrl.toString()
@@ -601,7 +620,7 @@ class MainActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, OnMap
                 latitude1 = mLastLocation.latitude
                 longtitude1 = mLastLocation.longitude
                 Log.d("TESTING", "buildLocationCallBack $latitude1, $longtitude1")
-                nearByPlace("restaurant")
+               // nearByPlace("restaurant")
 
 
                 //val latLng = LatLng(latitude1, longtitude1)
